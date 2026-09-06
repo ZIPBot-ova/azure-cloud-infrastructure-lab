@@ -52,7 +52,7 @@ Originally the SSH rule was too open, so I changed the source to only allow my c
 I also ran into a few problems creating the rule. Azure rejected it because of the source settings and rule priority, so I had to go back through the NSG configuration and fix those before the VM would deploy.
 
 After fixing the rule, I was able to SSH into `vm-mgmt-01` from my Windows computer using the private key Azure generated.
-
+![Successful SSH Connection](screenshots/ssh%20%282%29.png)
 ## Cost
 
 Both VMs are small lab VMs and I enabled auto-shutdown so I don't leave them running and burn through my Azure credits.
