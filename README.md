@@ -44,7 +44,7 @@ This is the management VM.
 The plan is to use this VM as the way into the environment and then manage internal systems from there.
 
 ## SSH and Network Security
-
+![Management VM NSG Rule](screenshots/mgmtvmnsg.png)
 I created an NSG rule that allows SSH on TCP port 22 to the management VM.
 
 Originally the SSH rule was too open, so I changed the source to only allow my current public IP.
