@@ -1,54 +1,64 @@
 # Azure Cloud Infrastructure Lab
 
-This is a lab I built to get more hands-on experience with Microsoft Azure and cloud networking.
+I built this lab to get some hands-on experience with Azure instead of only studying it from books and videos.
 
-The goal was to build a small Azure network from scratch, deploy Linux servers into separate subnets, and securely connect to the environment using SSH.
+The idea was to build a small Azure network, separate different types of devices with subnets, deploy a couple Linux VMs, and figure out how to securely access them.
 
-## What I Built
+## Network Setup
 
-I created an Azure virtual network called `vnet-cloudlab` and separated the environment into different subnets:
+I created a virtual network called `vnet-cloudlab` with three subnets:
 
-- `snet-servers` - 10.10.10.0/24
-- `snet-management` - 10.10.30.0/24
+| Subnet | Network | Purpose |
+| --- | --- | --- |
+| `snet-servers` | `10.10.10.0/24` | Servers |
+| `snet-clients` | `10.10.20.0/24` | Client machines |
+| `snet-management` | `10.10.30.0/24` | Management |
 
-I deployed two Ubuntu Server 24.04 VMs.
+![Azure Subnets](screenshots/azuresubnets.png)
+
+I wanted the network separated like something I would actually see in an enterprise environment instead of putting everything on one subnet.
+
+## Virtual Machines
+
+So far I have two Ubuntu Server 24.04 VMs.
 
 ### srv-linux-01
 
-This is my internal Linux server.
+This is the internal server.
 
-- Located on the server subnet
+- Connected to `snet-servers`
 - Private IP: `10.10.10.4`
 - No public IP
 
+I intentionally left this VM without a public IP because I don't want the server directly exposed to the internet.
+
 ### vm-mgmt-01
 
-This VM is used to access and manage the environment.
+This is the management VM.
 
-- Located on the management subnet
-- Has a public IP for remote access
+- Connected to `snet-management`
+- Has a public IP
 - Uses SSH key authentication
+- SSH is restricted by a Network Security Group
 
-## Network Security
+The plan is to use this VM as the way into the environment and then manage internal systems from there.
 
-I created a Network Security Group for the management VM and configured an inbound rule for SSH (TCP 22).
+## SSH and Network Security
 
-Instead of allowing SSH from anywhere on the internet, I restricted the rule to my public IP.
+I created an NSG rule that allows SSH on TCP port 22 to the management VM.
 
-One issue I ran into was getting the NSG rule configured correctly. I had to troubleshoot the source address, source port range, and rule priority before Azure would accept the configuration.
+Originally the SSH rule was too open, so I changed the source to only allow my current public IP.
 
-## What I Learned
+I also ran into a few problems creating the rule. Azure rejected it because of the source settings and rule priority, so I had to go back through the NSG configuration and fix those before the VM would deploy.
 
-This lab helped me get a better understanding of:
+After fixing the rule, I was able to SSH into `vm-mgmt-01` from my Windows computer using the private key Azure generated.
 
-- Azure VNets and subnets
-- Public vs private IP addresses
-- Network Security Groups
-- Inbound security rules
-- SSH key authentication
-- Deploying and managing Linux VMs in Azure
-- Basic Azure cost management using auto-shutdown
+## Cost
 
-## Next Steps
+Both VMs are small lab VMs and I enabled auto-shutdown so I don't leave them running and burn through my Azure credits.
 
-Next I want to configure the management VM so I can use it to access the internal Linux server without exposing the server directly to the internet.
+## What I Want To Do Next
+
+The next step is to use `vm-mgmt-01` to SSH into `srv-linux-01` over the private Azure network.
+
+After that I want to keep expanding the environment and eventually try rebuilding some of it with Terraform or Bicep.
