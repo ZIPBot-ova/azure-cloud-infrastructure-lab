@@ -19,7 +19,7 @@ I created a virtual network called `vnet-cloudlab` with three subnets:
 I wanted the network separated like something I would actually see in an enterprise environment instead of putting everything on one subnet.
 
 ## Virtual Machines
-
+![Azure Virtual Machines](screenshots/azurevms.png)
 So far I have two Ubuntu Server 24.04 VMs.
 
 ### srv-linux-01
